@@ -1,110 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <title>Bootstrap Example</title>
+  <title>Scan Your Face</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<style>
-#container {
-   /* margin-top: 50px ;
-   /* margin: 0px auto;*/
-    width: 500px;
-    height: 375px;
-   /* border: 10px #333 solid; */
-    background-image: url(snapshots/download.jpg);
+  <style>
+    body {
+      padding: 20px;
+    }
     
-}
-#videoElement {
-    width: 500px;
-    height: 375px;
-  
-}
-.no-padding
-{
-  padding-left: 0;
-  padding-right: 0;
-
-}
-
-#f_style
-{
-    width: 100%;
-    height: 70%;  
-    margin-right: 10px; 
-  
-}
-
-
-
-
-</style>
+    #videoElement {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+    }
+    
+    .floating-window {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90%;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      text-align: center;
+      z-index: 9999;
+      border-radius: 10px;
+      display: none;
+    }
+    
+    .header {
+      font-size: 20px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    
+    .button-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-around;
+    }
+    
+    .cancel-button {
+      background-color: #ccc;
+      border-radius: 20px;
+    }
+    
+    .selfie-button {
+      background-color: blue;
+      border-radius: 20px;
+    }
+  </style>
 
 </head>
+
 <body>
 
-<canvas id="CANVAS" name="CANVAS" width="400" height="350">Your browser does not support Canvas.</canvas>
-  
-    
-    <div id="container"  name='cont' class="container-fluid no-padding ">
-       <video autoplay="true" id="videoElement" name='vid'>
-     
-       </video>
+  <canvas id="CANVAS" name="CANVAS" width="400" height="350">Your browser does not support Canvas.</canvas>
+
+  <button onclick="showFloatingWindow()" class="btn btn-primary">Scan Your Face</button>
+
+  <div class="floating-window" id="floatingWindow">
+    <div class="header">
+      <span style="float: left;">Smile!</span>
     </div>
 
- <a id="download" download="face.jpg"></form>
-<button onclick="myFunction(); download();" align="center" style="margin: 20px 250px auto " class="btn btn-primary dropdown-toggle" type="button" >capture</button></a>
+    <video autoplay="true" id="videoElement" name='vid'></video>
 
-<script>
+    <div class="button-container">
+      <button onclick="cancel()" class="btn btn-default cancel-button">Cancel</button>
+      <button onclick="capture()" class="btn btn-primary selfie-button">Take Selfie</button>
+    </div>
+  </div>
 
-  function download(){
-    var download = document.getElementById("download");
-    var image = document.getElementById("CANVAS").toDataURL("image/png")
-                    .replace("image/jpg", "image/octet-stream");
-        download.setAttribute("href", image);
-        //download.setAttribute("download","archive.png");
-  }
+  <script>
+    var video = document.querySelector("#videoElement");
+    var canvas = document.getElementById("CANVAS");
+    var ctx = canvas.getContext("2d");
+    var floatingWindow = document.getElementById("floatingWindow");
 
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({
+          video: true
+        })
+        .then(function(stream) {
+          video.srcObject = stream;
+        })
+        .catch(function(error) {
+          console.log("Something went wrong!");
+        });
+    }
 
+    function capture() {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+      var download = document.createElement('a');
+      download.href = canvas.toDataURL("image/png");
+      download.download = "selfie.png";
+      download.click();
+    }
 
+    function cancel() {
+      hideFloatingWindow();
+    }
 
-  var video = document.querySelector("#videoElement");
- 
-if (navigator.mediaDevices.getUserMedia) 
-{       
-    navigator.mediaDevices.getUserMedia({video: true})
-  .then(function(stream) {
-    video.srcObject = stream;
-  })
-  .catch(function(err0r) {
-    console.log("Something went wrong!");
-  });
-var i=0;
-function myFunction() {
-  var x =  document.getElementById("CANVAS") ;
-  var ctx = x.getContext("2d");
-  ctx.fillStyle = "#FF0000";
-  
-  ctx.drawImage(video, 0, 0, 400, 350);
+    function showFloatingWindow() {
+      floatingWindow.style.display = "block";
+    }
 
-  //ctx.fillRect(20, 20, 150, 100);
+    function hideFloatingWindow() {
+      floatingWindow.style.display = "none";
+    }
+  </script>
 
-  if (i <10)
-  {
-  document.body.appendChild(x);
-  i=i+1;
-};
-
-
-}
-
-}
-</script>
-
-    
 </body>
+
 </html>
+
